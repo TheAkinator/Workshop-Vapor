@@ -19,8 +19,14 @@ class UserController: ResourceRepresentable {
     init(droplet: Droplet) {
         self.droplet = droplet
 //        self.token = token
-//        self.droplet.post("users", handler: create(request:))
-
+        self.droplet.get("users", "startswith", String.parameter, handler: usersStartsWith(request:))
+ 
+    }
+    
+    func usersStartsWith(request: Request) throws -> ResponseRepresentable {
+        let string = try request.parameters.next(String.self)
+        
+        return try User.makeQuery().filter("name", .hasPrefix, string).all().makeJSON()
     }
     
     func index(request: Request) throws -> ResponseRepresentable {
